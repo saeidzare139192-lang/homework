@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>مدیریت تکالیف</title>
+<style>
+@font-face{font-family:Vazirmatn;src:url('fonts/Vazirmatn.woff2') format('woff2');font-weight:100 900;font-display:swap}
+:root{--bg:#f4f6fb;--card:#fff;--tx:#1b2333;--mut:#6b7488;--pri:#5b5bd6;--pri2:#eceaff;--bd:#e3e7f0;--ok:#16a34a;--warn:#f59e0b;--bad:#e11d48;--sh:0 4px 16px rgba(30,40,80,.07);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10131c;--card:#1a1f2d;--tx:#eef1f8;--mut:#98a1b6;--pri:#8b8bff;--pri2:#2a2d4d;--bd:#2a3044;--sh:none;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#10131c;--card:#1a1f2d;--tx:#eef1f8;--mut:#98a1b6;--pri:#8b8bff;--pri2:#2a2d4d;--bd:#2a3044;--sh:none;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{background:var(--bg);color:var(--tx);font-family:Vazirmatn,Tahoma,"Segoe UI",sans-serif;font-size:15px;padding-bottom:84px}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+main{max-width:720px;margin:auto;padding:16px;animation:fi .25s}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1}}
+h1{font-size:22px;margin:4px 0 2px}h2{font-size:16px;margin:20px 0 10px}
+.mut{color:var(--mut);font-size:13px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:18px;padding:14px;box-shadow:var(--sh)}
+.stat b{display:block;font-size:26px;font-weight:800}
+.stat.s1 b{color:var(--pri)}.stat.s2 b{color:var(--ok)}.stat.s3 b{color:var(--warn)}.stat.s4 b{color:var(--bad)}
+.bar{height:10px;background:var(--pri2);border-radius:9px;overflow:hidden;margin-top:10px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--pri),var(--ok));border-radius:9px;transition:width .5s}
+.task{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;border-right:5px solid var(--pri)}
+.task .ck{flex:none;width:30px;height:30px;border-radius:50%;border:2px solid var(--bd);background:none;color:#fff;font-size:15px;cursor:pointer}
+.task.done .ck{background:var(--ok);border-color:var(--ok)}.task.doing .ck{border-color:var(--warn);background:var(--warn)}
+.task.done .tt{text-decoration:line-through;opacity:.55}
+.tt{font-weight:600}.tb{flex:1;min-width:0}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.tag{font-size:12px;padding:2px 9px;border-radius:20px;background:var(--pri2);color:var(--pri)}
+.tag.bad{background:#e11d4822;color:var(--bad)}.tag.h{background:#e11d4822;color:var(--bad)}.tag.m{background:#f59e0b22;color:var(--warn)}.tag.l{background:#16a34a22;color:var(--ok)}
+.ib{background:none;border:0;font-size:17px;cursor:pointer;padding:4px;color:var(--mut)}
+input,select,textarea{width:100%;font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:12px;padding:10px 12px;margin:4px 0 10px}
+textarea{min-height:70px;resize:vertical}label{font-size:13px;color:var(--mut)}
+.btn{font:inherit;background:var(--pri);color:#fff;border:0;border-radius:12px;padding:10px 16px;cursor:pointer;font-weight:600}
+.btn.g{background:var(--pri2);color:var(--pri)}.btn.r{background:var(--bad)}.btn.w{width:100%}
+.row{display:flex;gap:8px}.row>*{flex:1}
+nav{position:fixed;inset:auto 0 0 0;background:var(--card);border-top:1px solid var(--bd);display:flex;justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));z-index:5}
+nav button{background:none;border:0;font:inherit;font-size:11px;color:var(--mut);display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 10px;cursor:pointer}
+nav button span{font-size:21px}nav button.on{color:var(--pri);font-weight:700}
+.fab{position:fixed;left:16px;bottom:calc(76px + env(safe-area-inset-bottom,0px));width:56px;height:56px;border-radius:50%;font-size:28px;z-index:6;box-shadow:0 6px 18px rgba(91,91,214,.4)}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center;z-index:20}
+.sh{background:var(--card);width:100%;max-width:560px;max-height:92%;overflow:auto;border-radius:22px 22px 0 0;padding:18px;animation:fi .2s}
+.chip{display:inline-block;padding:6px 12px;margin:3px;border-radius:20px;border:1px solid var(--bd);cursor:pointer}
+.chip.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.sw{width:30px;height:30px;border-radius:50%;display:inline-block;margin:3px;cursor:pointer;border:3px solid transparent}.sw.on{border-color:var(--tx)}
+#toast{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 18px;border-radius:14px;z-index:40;display:none;max-width:90%}
+.empty{text-align:center;color:var(--mut);padding:28px 8px}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+<main id="app"></main>
+<button class="btn fab" id="fab" data-act="newtask" aria-label="افزودن">＋</button>
+<nav id="nav"></nav>
+<div id="modal"></div>
+<script>
+const COLORS=['#5b5bd6','#0ea5e9','#16a34a','#f59e0b','#e11d4a','#a855f7','#14b8a6','#f97316'];
+const ICONS=['📘','🧮','🔬','🌍','🖋️','🎨','⚽','💻','🕌','🎵'];
+const PR={low:'کم',mid:'متوسط',high:'زیاد'},ST={todo:'انجام‌نشده',doing:'در حال انجام',done:'انجام‌شده'};
+const def=()=>({user:'',theme:'auto',defStatus:'todo',remind:60,notif:false,courses:[],tasks:[],notified:{}});
+let S=load(),tab='home',F={q:'',st:'',pr:'',rg:'all',sort:'asc'};
+function load(){try{const r=localStorage.getItem('hw_v1');if(r)return Object.assign(def(),JSON.parse(r))}catch(e){}return def()}
+const NATIVE=!!(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform());
+const hid=s=>{let h=0;for(const c of String(s))h=(h*31+c.charCodeAt(0))|0;return Math.abs(h)%2147483647||1};
+async function sched(){if(!NATIVE)return;try{const L=Capacitor.Plugins.LocalNotifications,p=await L.getPending();
+if(p.notifications.length)await L.cancel({notifications:p.notifications});if(!S.notif)return;const arr=[];
+S.tasks.forEach(t=>{if(t.status==='done')return;const at=new Date(new Date(t.due).getTime()-S.remind*6e4);
+if(at>new Date())arr.push({id:hid(t.id),title:'یادآوری تکلیف',body:'«'+t.title+'» موعد تحویل نزدیک است',schedule:{at,allowWhileIdle:true}})});
+if(arr.length)await L.schedule({notifications:arr})}catch(e){}}
+function save(){sched();try{localStorage.setItem('hw_v1',JSON.stringify(S))}catch(e){toast('ذخیره‌سازی در این مرورگر ممکن نیست')}}
+const $=s=>document.querySelector(s),n=x=>Number(x).toLocaleString('fa-IR');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+function fd(d,t){try{return new Date(d).toLocaleString('fa-IR-u-ca-persian',t?{dateStyle:'medium',timeStyle:'short'}:{dateStyle:'medium'})}catch(e){return d}}
+function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>t.style.display='none',3000)}
+const crs=id=>S.courses.find(c=>c.id===id);
+const late=t=>t.status!=='done'&&new Date(t.due)<new Date();
+const sameDay=(a,b)=>a.toDateString()===b.toDateString();
+function theme(){const r=document.documentElement;S.theme==='auto'?r.removeAttribute('data-theme'):r.setAttribute('data-theme',S.theme)}
+function pct(){const t=S.tasks.length;return t?Math.round(S.tasks.filter(x=>x.status==='done').length/t*100):0}
+
+function taskCard(t){const c=crs(t.courseId)||{name:'بدون درس',color:'#888',icon:'📄'};
+const cls=t.status+(late(t)?' lt':'');
+return `<div class="card task ${t.status}" style="border-right-color:${c.color}"><button class="ck" data-act="cycle" data-id="${t.id}" aria-label="تغییر وضعیت">${t.status==='done'?'✓':t.status==='doing'?'…':''}</button>
+<div class="tb"><div class="tt">${esc(t.title)}</div><div class="mut">${c.icon} ${esc(c.name)} · ${fd(t.due,1)}</div>
+${t.desc?`<div class="mut">${esc(t.desc)}</div>`:''}${t.note?`<div class="mut">📝 ${esc(t.note)}</div>`:''}
+<div class="tags"><span class="tag ${t.prio[0]}">${PR[t.prio]}</span><span class="tag">${ST[t.status]}</span>${late(t)?'<span class="tag bad">عقب‌افتاده</span>':''}</div></div>
+<div><button class="ib" data-act="edit" data-id="${t.id}">✏️</button><button class="ib" data-act="del" data-id="${t.id}">🗑️</button></div></div>`}
+
+function home(){const T=S.tasks,now=new Date(),done=T.filter(x=>x.status==='done').length;
+const soon=T.filter(x=>x.status!=='done'&&new Date(x.due)>=now&&new Date(x.due)-now<2*864e5).sort((a,b)=>new Date(a.due)-new Date(b.due));
+const od=T.filter(late),today=T.filter(x=>sameDay(new Date(x.due),now)).sort((a,b)=>new Date(a.due)-new Date(b.due));
+const h=now.getHours(),g=h<12?'صبح بخیر':h<18?'سلام':'عصر بخیر';
+return `<h1>${g}${S.user?'، '+esc(S.user):''} 👋</h1><div class="mut">${fd(now)}</div>
+<div class="card" style="margin-top:14px"><div style="display:flex;justify-content:space-between"><b>پیشرفت کلی</b><b>٪${n(pct())}</b></div><div class="bar"><i style="width:${pct()}%"></i></div></div>
+<div class="grid" style="margin-top:10px"><div class="card stat s1"><span class="mut">کل تکالیف</span><b>${n(T.length)}</b></div><div class="card stat s2"><span class="mut">انجام‌شده</span><b>${n(done)}</b></div>
+<div class="card stat s3"><span class="mut">باقی‌مانده</span><b>${n(T.length-done)}</b></div><div class="card stat s4"><span class="mut">عقب‌افتاده</span><b>${n(od.length)}</b></div></div>
+<h2>⏰ نزدیک به موعد (۴۸ ساعت آینده)</h2>${soon.map(taskCard).join('')||'<div class="empty">موردی نیست</div>'}
+${od.length?`<h2>⚠️ عقب‌افتاده</h2>${od.map(taskCard).join('')}`:''}
+<h2>📅 تکالیف امروز</h2>${today.map(taskCard).join('')||'<div class="empty">برای امروز تکلیفی ندارید</div>'}`}
+
+function filtered(){const now=new Date(),wk=new Date(now.getTime()+7*864e5);
+let L=S.tasks.filter(t=>{const q=F.q.trim().toLowerCase(),c=crs(t.courseId);
+if(q&&!((c?.name||'')+t.title+t.desc).toLowerCase().includes(q))return false;
+if(F.st&&t.status!==F.st)return false;if(F.pr&&t.prio!==F.pr)return false;
+const d=new Date(t.due);if(F.rg==='today'&&!sameDay(d,now))return false;if(F.rg==='week'&&(d<new Date(now.toDateString())||d>wk))return false;return true});
+L.sort((a,b)=>(new Date(a.due)-new Date(b.due))*(F.sort==='asc'?1:-1));return L}
+function listHTML(){const L=filtered();return L.map(taskCard).join('')||'<div class="empty">تکلیفی پیدا نشد</div>'}
+function sel(id,o,v){return `<select id="${id}">${Object.entries(o).map(([k,l])=>`<option value="${k}" ${k===v?'selected':''}>${l}</option>`).join('')}</select>`}
+function tasks(){return `<h1>تکالیف</h1><input id="q" placeholder="جست‌وجو در نام درس یا توضیحات…" value="${esc(F.q)}">
+<div class="row">${sel('fst',{'':'همه وضعیت‌ها',...ST},F.st)}${sel('fpr',{'':'همه اولویت‌ها',...PR},F.pr)}</div>
+<div class="row">${sel('frg',{all:'همه تکالیف',today:'امروز',week:'این هفته'},F.rg)}${sel('fso',{asc:'نزدیک‌ترین موعد',desc:'دورترین موعد'},F.sort)}</div><div id="tl">${listHTML()}</div>`}
+
+function courses(){return `<h1>درس‌ها</h1><button class="btn w" data-act="newcourse" style="margin:10px 0">＋ افزودن درس</button>
+${S.courses.map(c=>{const k=S.tasks.filter(t=>t.courseId===c.id);return `<div class="card task" style="border-right-color:${c.color}"><div style="font-size:26px">${c.icon}</div><div class="tb"><div class="tt">${esc(c.name)}</div><div class="mut">${n(k.length)} تکلیف · ${n(k.filter(t=>t.status!=='done').length)} باقی‌مانده</div></div>
+<button class="ib" data-act="addt" data-id="${c.id}" title="افزودن تکلیف">➕</button><button class="ib" data-act="editc" data-id="${c.id}">✏️</button><button class="ib" data-act="delc" data-id="${c.id}">🗑️</button></div>`}).join('')||'<div class="empty">هنوز درسی اضافه نکرده‌اید</div>'}`}
+
+function settings(){return `<h1>تنظیمات</h1><div class="card" style="margin-top:12px"><label>نام کاربر</label><input id="su" value="${esc(S.user)}" maxlength="30">
+<label>تم</label>${sel('sth',{auto:'خودکار (سیستم)',light:'روشن',dark:'تاریک'},S.theme)}
+<label>وضعیت پیش‌فرض تکالیف جدید</label>${sel('sds',ST,S.defStatus)}
+<label>یادآوری پیش از موعد</label>${sel('sre',{15:'۱۵ دقیقه',60:'۱ ساعت',180:'۳ ساعت',1440:'۱ روز'},S.remind)}
+<button class="btn g w" data-act="notif">${S.notif?'🔔 اعلان‌ها فعال است (غیرفعال‌سازی)':'🔕 فعال‌سازی اعلان‌ها'}</button>
+<div class="mut" style="margin-top:6px">اعلان‌ها تا زمانی که برنامه باز است ارسال می‌شوند.</div></div>
+<h2>پشتیبان‌گیری</h2><div class="card"><div class="row"><button class="btn g" data-act="export">نمایش / کپی نسخه پشتیبان</button><button class="btn g" data-act="import">بازیابی</button></div></div>
+<h2>درباره</h2><div class="card mut">مدیریت تکالیف · نسخه ۲٫۰<br>تهیه‌کننده: سعید زارع<br>داده‌ها فقط روی همین دستگاه ذخیره می‌شوند.</div>`}
+
+function render(){theme();const V={home,tasks,courses,settings};$('#app').innerHTML=V[tab]();
+$('#fab').style.display=tab==='settings'?'none':'';
+$('#nav').innerHTML=[['home','🏠','خانه'],['tasks','✅','تکالیف'],['courses','📚','درس‌ها'],['settings','⚙️','تنظیمات']].map(([k,i,l])=>`<button class="${tab===k?'on':''}" data-tab="${k}"><span>${i}</span>${l}</button>`).join('')}
+
+function modal(h){$('#modal').innerHTML=h?`<div class="ov" data-act="close"><div class="sh">${h}</div></div>`:''}
+function localISO(d){const z=new Date(d.getTime()-d.getTimezoneOffset()*6e4);return z.toISOString().slice(0,16)}
+function taskForm(id,cid){if(!S.courses.length){modal(`<h2>ابتدا یک درس اضافه کنید</h2><button class="btn w" data-act="newcourse">افزودن درس</button>`);return}
+const t=S.tasks.find(x=>x.id===id)||{courseId:cid||S.courses[0].id,title:'',desc:'',due:localISO(new Date(Date.now()+864e5)),prio:'mid',status:S.defStatus,note:''};
+modal(`<h2>${id?'ویرایش تکلیف':'تکلیف جدید'}</h2><label>درس</label><select id="fc">${S.courses.map(c=>`<option value="${c.id}" ${c.id===t.courseId?'selected':''}>${c.icon} ${esc(c.name)}</option>`).join('')}</select>
+<label>عنوان تکلیف *</label><input id="ft" value="${esc(t.title)}" maxlength="80"><label>توضیحات</label><textarea id="fd">${esc(t.desc)}</textarea>
+<label>تاریخ و ساعت تحویل *</label><input id="fdu" type="datetime-local" value="${t.due}">
+<div class="row"><div><label>اولویت</label>${sel('fp',PR,t.prio)}</div><div><label>وضعیت</label>${sel('fs',ST,t.status)}</div></div>
+<label>یادداشت</label><textarea id="fn">${esc(t.note)}</textarea>${id?`<div class="mut">ثبت‌شده در ${fd(t.created,1)}</div>`:''}
+<div class="row" style="margin-top:10px"><button class="btn" data-act="savetask" data-id="${id||''}">ذخیره</button><button class="btn g" data-act="close">انصراف</button></div>`)}
+let cc={color:COLORS[0],icon:ICONS[0]};
+function courseForm(id){const c=crs(id)||{name:'',color:COLORS[0],icon:ICONS[0]};cc={color:c.color,icon:c.icon};
+modal(`<h2>${id?'ویرایش درس':'درس جدید'}</h2><label>نام درس *</label><input id="cn" value="${esc(c.name)}" maxlength="30">
+<label>رنگ</label><div id="cols">${COLORS.map(x=>`<span class="sw ${x===c.color?'on':''}" style="background:${x}" data-col="${x}"></span>`).join('')}</div>
+<label>آیکون</label><div id="icos">${ICONS.map(x=>`<span class="chip ${x===c.icon?'on':''}" data-ico="${x}">${x}</span>`).join('')}</div>
+<div class="row" style="margin-top:10px"><button class="btn" data-act="savecourse" data-id="${id||''}">ذخیره</button>${id?'':'<button class="btn g" data-act="savecoursetask">ذخیره و افزودن تکلیف</button>'}<button class="btn g" data-act="close">انصراف</button></div>`)}
+function confirmBox(msg,act,id){modal(`<h2>${msg}</h2><div class="row"><button class="btn r" data-act="${act}" data-id="${id}">بله، حذف شود</button><button class="btn g" data-act="close">انصراف</button></div>`)}
+
+function saveTask(id){const title=$('#ft').value.trim(),due=$('#fdu').value;
+if(!title)return toast('عنوان تکلیف را وارد کنید');if(!due||isNaN(new Date(due)))return toast('تاریخ تحویل معتبر نیست');
+const o={courseId:$('#fc').value,title,desc:$('#fd').value.trim(),due,prio:$('#fp').value,status:$('#fs').value,note:$('#fn').value.trim()};
+if(id){Object.assign(S.tasks.find(x=>x.id===id),o);delete S.notified[id]}else S.tasks.push({id:uid(),created:new Date().toISOString(),...o});
+save();modal();render();toast('ذخیره شد ✓')}
+function saveCourse(id,add){const name=$('#cn').value.trim();if(!name)return toast('نام درس را وارد کنید');
+if(S.courses.some(c=>c.name===name&&c.id!==id))return toast('این درس قبلاً وجود دارد');
+let cid=id;if(id)Object.assign(crs(id),{name,...cc});else{cid=uid();S.courses.push({id:cid,name,...cc})}save();modal();render();if(add)taskForm(null,cid)}
+function exportB(){const j=JSON.stringify(S);modal(`<h2>نسخه پشتیبان</h2><div class="mut">متن زیر را کپی و در جای امنی نگه دارید.</div><textarea id="bk" readonly style="min-height:140px;direction:ltr">${esc(j)}</textarea>
+<div class="row"><button class="btn" data-act="copy">کپی</button><button class="btn g" data-act="close">بستن</button></div>`)}
+function importB(){modal(`<h2>بازیابی اطلاعات</h2><div class="mut">متن پشتیبان این برنامه یا محتوای فایل homework_data.json نسخه پایتون را بچسبانید. اطلاعات فعلی جایگزین می‌شود.</div><textarea id="bk" style="min-height:140px;direction:ltr"></textarea>
+<div class="row"><button class="btn" data-act="doimport">بازیابی</button><button class="btn g" data-act="close">انصراف</button></div>`)}
+function legacy(d){const m={},r=def(),st=s=>s==='انجام شده'?'done':s==='در حال انجام'?'doing':'todo',due=localISO(new Date(Date.now()+864e5));r.user=String(d.username||'').slice(0,30);r.defStatus=st(d.default_status);
+d.lessons.forEach((l,i)=>{if(!m[l]){m[l]=uid();r.courses.push({id:m[l],name:String(l),color:COLORS[r.courses.length%8],icon:ICONS[r.courses.length%10]})}
+r.tasks.push({id:uid(),courseId:m[l],title:String(d.tasks[i]||l),desc:'',due,prio:'mid',status:st(d.status[i]),note:'',created:new Date().toISOString()})});return r}
+function doImport(){try{let d=JSON.parse($('#bk').value);if(Array.isArray(d.lessons)&&Array.isArray(d.tasks)&&Array.isArray(d.status)&&d.lessons.length===d.tasks.length&&d.tasks.length===d.status.length)d=legacy(d);if(!Array.isArray(d.courses)||!Array.isArray(d.tasks))throw 0;S=Object.assign(def(),d);save();modal();render();toast('بازیابی شد ✓')}catch(e){toast('فایل پشتیبان معتبر نیست')}}
+async function toggleNotif(){if(NATIVE&&!S.notif){try{const r=await Capacitor.Plugins.LocalNotifications.requestPermissions();if(r.display==='granted')S.notif=true;else toast('مجوز اعلان داده نشد')}catch(e){toast('خطا در دریافت مجوز اعلان')}save();render();return}
+if(S.notif){S.notif=false;save();render();return}
+try{const p=await Notification.requestPermission();if(p==='granted'){S.notif=true;new Notification('اعلان‌ها فعال شد')}else toast('مجوز اعلان داده نشد؛ از تنظیمات مرورگر مجاز کنید')}catch(e){S.notif=true;toast('اعلان درون‌برنامه‌ای فعال شد')}save();render()}
+function check(){if(!S.notif||NATIVE)return;const now=Date.now();let ch=0;
+S.tasks.forEach(t=>{if(t.status==='done'||S.notified[t.id])return;const d=new Date(t.due)-now;
+if(d<=S.remind*6e4&&d>-864e5){S.notified[t.id]=1;ch=1;const m=`«${t.title}» ${d>0?'به‌زودی':'گذشته است'} موعد دارد`;
+try{if(Notification.permission==='granted')new Notification('یادآوری تکلیف',{body:m});else toast(m)}catch(e){toast(m)}}});if(ch)save()}
+
+document.addEventListener('click',e=>{const tb=e.target.closest('[data-tab]');if(tb){tab=tb.dataset.tab;render();window.scrollTo(0,0);return}
+const sw=e.target.closest('[data-col]');if(sw){cc.color=sw.dataset.col;document.querySelectorAll('.sw').forEach(x=>x.classList.toggle('on',x===sw));return}
+const ic=e.target.closest('[data-ico]');if(ic){cc.icon=ic.dataset.ico;document.querySelectorAll('[data-ico]').forEach(x=>x.classList.toggle('on',x===ic));return}
+const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act,id=b.dataset.id;
+({close:()=>{if(b.classList.contains('ov')&&e.target!==b)return;modal()},newtask:()=>taskForm(),edit:()=>taskForm(id),savetask:()=>saveTask(id),
+cycle:()=>{const t=S.tasks.find(x=>x.id===id),o=['todo','doing','done'];t.status=o[(o.indexOf(t.status)+1)%3];save();render()},
+del:()=>confirmBox('این تکلیف حذف شود؟','dodel',id),dodel:()=>{S.tasks=S.tasks.filter(x=>x.id!==id);delete S.notified[id];save();modal();render()},
+newcourse:()=>courseForm(),editc:()=>courseForm(id),savecourse:()=>saveCourse(id),savecoursetask:()=>saveCourse('',1),addt:()=>taskForm(null,id),
+delc:()=>{const k=S.tasks.filter(t=>t.courseId===id).length;confirmBox(k?`این درس و ${n(k)} تکلیف آن حذف شود؟`:'این درس حذف شود؟','dodelc',id)},
+dodelc:()=>{S.tasks=S.tasks.filter(t=>t.courseId!==id);S.courses=S.courses.filter(c=>c.id!==id);save();modal();render()},
+notif:toggleNotif,export:exportB,import:importB,doimport:doImport,
+copy:()=>{const el=$('#bk');el.select();try{navigator.clipboard.writeText(el.value).then(()=>toast('کپی شد ✓'),()=>{document.execCommand('copy');toast('کپی شد ✓')})}catch(x){try{document.execCommand('copy');toast('کپی شد ✓')}catch(y){toast('متن را دستی کپی کنید')}}}}[a]||(()=>{}))()});
+document.addEventListener('input',e=>{const i=e.target.id;
+if(i==='q'){F.q=e.target.value;$('#tl').innerHTML=listHTML()}
+else if(i==='su'){S.user=e.target.value.slice(0,30);save()}});
+document.addEventListener('change',e=>{const i=e.target.id,v=e.target.value,m={fst:'st',fpr:'pr',frg:'rg',fso:'sort'};
+if(m[i]){F[m[i]]=v;$('#tl').innerHTML=listHTML()}
+else if(i==='sth'){S.theme=v;save();theme()}else if(i==='sds'){S.defStatus=v;save()}else if(i==='sre'){S.remind=+v;S.notified={};save()}});
+render();check();sched();setInterval(check,30000);
+</script>
+</body>
+</html>
